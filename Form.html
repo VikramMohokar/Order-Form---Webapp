@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Form</title>
+  <!-- Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+  <link href="https://printjs-4de6.kxcdn.com/print.min.css" rel="stylesheet">
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+  <script>
+    if (window.trustedTypes && window.trustedTypes.createPolicy) {
+      window.trustedTypes.createPolicy('orderform', {
+        createHTML: string => string,
+        createScriptURL: string => string,
+        createScript: string => string,
+      });
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f3f4f6;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      margin-top: 5px;
+    }
+
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+      width: 1400px !important;
+      margin: 0 auto;
+      border: 2px solid #32a89f;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      background-color: #8BE8E5;
+    }
+
+    /* General Table Styles */
+    #itemsTable {
+      width: 100% !important;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    /* General Table Styles */
+    #itemsTable {
+      width: 100% !important;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #itemsTable th {
+      border: 1px solid #c0c0c0;
+      padding: 4px 4px;
+      background-color: #8BE8E5;
+    }
+
+    /* Header Styles */
+    #itemsTable thead {
+      background-color: #ADD8E6;
+      /* Light blue background */
+      color: #333333;
+      font-size: 13px;
+    }
+
+    #itemsTable thead tr th {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .custom-btn:active {
+      transform: scale(0.95) !important;
+      background-color: #28a745 !important;
+      border-color: #1f7a34 !important;
+    }
+
+    #spinner {
+      margin: 10px;
+    }
+
+    .fixed-width-select2 .select2-container {
+      width: 180px !important;
+      /* Set your desired fixed width */
+    }
+
+    .fixed-width-select2 .select2-selection {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .disabled-field {
+        background-color: #FFC0D9; /* Light pink background */
+        color: #737373; /* Darker grey text */
+        pointer-events: none; /* Prevents interaction with the disabled element */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <h2 class="card-header"
+        style="font-size: 27px; font-family: 'Cambria', serif; display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: flex-start;">
+          <button class="btn btn-sm custom-btn" type="button" onclick="refresh()"
+            style="background-color: #860A35; color: white; margin-right: 10px;">
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+          <button class="btn btn-sm custom-btn" type="button" onclick="getDataAll()"
+            style="background-color: #FF9800; color: white; margin-right: 10px;">
+            <i class="bi bi-bullseye"></i>
+          </button>           
+        </div>
+        <div style="flex: 0 1 auto; text-align: center; font-weight: bold; color: #172774;">Order Form</div>
+        <div id="usernameContainer" style="flex: 1; display: flex; justify-content: flex-end; font-size: 15px;">
+          <i class="bi bi-person-circle" style="margin-right: 5px; color: #170055;"></i>
+          <span id="usernameDisplay" style="color: #161D6F;"></span>
+        </div>
+      </h2>
+      <div class="card-body">
+        <form id="orderForm" class="needs-validation" novalidate>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="UID">Search UID:</label>
+                <select class="form-select" id="UID">
+                  <option value="">Select UID</option>
+                  <!-- Dropdown options go here -->
+                </select>
+                <button class="btn btn-primary custom-btn" type="button" onclick="searchUid()">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderNo">Order No.:</label>
+                <input type="text" class="form-control" id="orderNo" required>
+                <label class="input-group-text" for="duplicate">Duplicate</label>
+                <div class="input-group-text">
+                  <input class="form-check-input mt-0" type="checkbox" id="duplicate">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderInCompany">Firm:</label>
+                <select class="form-select" id="orderInCompany" required>
+                  <option value="">Select</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="partyName">Party Name:</label>
+                <select class="form-select" id="partyName" onchange="updateAreaDropdown()" required>
+                  <option value selected disabled>Select Party Name</option>
+                  <!-- Dropdown options go here -->
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="area">Area:</label>
+                <select class="form-select" id="area" required>
+                  <option value selected disabled>Select Area</option>
+                  <!-- Dropdown options go here -->
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="rPerson">Resp. Person:</label>
+                <input type="text" class="form-control" id="rPerson">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="rDes">Desig.:</label>
+                <input type="text" class="form-control" id="rDes">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="rcNumber">Contact Number:</label>
+                <input type="tel" class="form-control" id="rcNumber" pattern="[0-9]{10}">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="remailId">Email ID:</label>
+                <input type="email" class="form-control" id="remailId">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderDate">Order Date:</label>
+                <input type="date" class="form-control" id="orderDate" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderRecdDate">Order Recd. Date:</label>
+                <input type="date" class="form-control" id="orderRecdDate" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="despatchDueDate">Despatch Due Date:</label>
+                <input type="date" class="form-control" id="despatchDueDate" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="dealerName">Dealer Name:</label>
+                <select class="form-select" id="dealerName" required>
+                  <option value="">Select</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderReceivedBy">Order Received By:</label>
+                <select class="form-select" id="orderReceivedBy" required>
+                  <option value="">Select</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="paymentTerms">Payment Terms:</label>
+                <select class="form-select" id="paymentTerms" required>
+                  <option value="">Select</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="orderValue">Order Value:</label>
+                <input type="number" class="form-control" id="orderValue" disabled>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="resFPending">Reason for Pending:</label>
+                <select class="form-select" id="resFPending">
+                  <option value="">Select</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="pocopy">Upload PO:</label>
+                <input type="file" class="form-control" id="pocopy">
+                <button class="btn btn-outline-secondary btn-sm custom-btn" type="button" id="dowPO" title="Download"
+                  onclick="openpoUrl()">
+                  <i class="fa-solid fa-file-invoice fa-2xl"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="input-group input-group-sm mb-3">
+                <label class="input-group-text" for="remarks">Remarks:</label>
+                <input type="text" class="form-control" id="remarks">
+              </div>
+            </div>
+          </div>
+          <!-- Table -->
+          <div class="table-responsive">
+            <table id="itemsTable" class="table table-striped table-hover table-bordered table-responsive">
+              <thead>
+                <tr>
+                  <th>Sr.No.</th>
+                  <th>Item</th>
+                  <th>Type</th>
+                  <th>UOM</th>
+                  <th>Product ID</th>
+                  <th>Qty.</th>
+                  <th>Rate</th>
+                  <th>Disc. %</th>
+                  <th>GST %</th>
+                  <th>T.Amt.</th>
+                  <th>Inst.</th>
+                  <th>
+                    C.Qty <input type="checkbox" id="cQtybox" onchange="selectcQtybox()" />
+                  </th>
+                  <th>C.Reason</th>
+                  <th style="display: none;">Row No.</th>
+                  <th style="display: none;">prorow</th>
+                  <th>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addItem()">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be added here dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-center">
+            <div id="spinner" class="spinner-border text-warning" style="display: none"></div>
+          </div>
+          <div class="d-flex justify-content-center mb-3">
+            <button type="button" class="btn btn-success btn-sm me-2 custom-btn" onclick="submitForm()">
+              <i class="fas fa-check"></i> Submit
+            </button>
+            <button type="button" class="btn btn-info btn-sm me-2 custom-btn" onclick="updateForm()">
+              <i class="fas fa-edit"></i> Update
+            </button>
+            <button type="button" class="btn btn-warning btn-sm me-2 custom-btn" onclick="clearForm()">
+              <i class="fas fa-times"></i> Clear
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm me-2 custom-btn" onclick="printForm()">
+              <i class="fa-solid fa-print"></i> Print            
+            <!-- <button type="button" class="btn btn-danger btn-sm me-2 custom-btn" onclick="deleteForm()">
+          <i class="fas fa-trash"></i> Delete
+        </button> -->
+          </div>
+
+        </form>
+        <footer style="text-align: center; padding-top: 10px;">
+          <p>
+            <a href="https://automationcontrol.in/" target="_blank"
+              style="color: #279EFF; text-decoration: none;"><small>© Automation Controls</small></a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.onload = function () {
+      populateUIDDropdown();
+      populatePartyNames();
+      loadDropdownData();
+      fetchItemData();
+      fetchGSTData();
+      calculateTotalOrderValue();
+      attachEventListenersToAllRows();
+      updateDowPOButton();
+      updateUsernameDisplay();
+      getProrowAll();
+    };
+
+    // username display
+    function updateUsernameDisplay() {
+      var currentUser = localStorage.getItem('username');
+      var usernameDisplayElement = document.getElementById('usernameDisplay');
+      if (usernameDisplayElement && currentUser) {
+        usernameDisplayElement.textContent = currentUser;
+      }
+    }
+
+    // function for form validation
+    function isFormValid(event) {
+      let form = document.getElementById('orderForm');
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+      }
+      return true;
+    }
+
+    // Initialize Select2 for single and multiple select dropdowns
+    $('#UID').select2({
+      theme: "bootstrap-5",
+      width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+      placeholder: $(this).data('placeholder'),
+      selectionCssClass: 'select2--small',
+      dropdownCssClass: 'select2--small',
+    });
+
+    $('#partyName').select2({
+      theme: "bootstrap-5",
+      width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+      placeholder: $(this).data('placeholder'),
+      selectionCssClass: 'select2--small',
+      dropdownCssClass: 'select2--small',
+      // tags: true,
+    });
+
+    $('#area').select2({
+      theme: "bootstrap-5",
+      width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+      placeholder: $(this).data('placeholder'),
+      selectionCssClass: 'select2--small',
+      dropdownCssClass: 'select2--small',
+      // tags: true,
+    });
+
+    function initializeSelect2ForDropdown(dropdown) {
+      $(dropdown).select2({
+        theme: "bootstrap-5",
+        placeholder: $(dropdown).data('placeholder'),
+        selectionCssClass: 'select2--small',
+        dropdownCssClass: 'select2--small',
+      });
+    }
+
+    var globalUIDs = []; // Global variable to store the UIDs
+
+    function populateUIDDropdown() {
+      google.script.run.withSuccessHandler(function (uids) {
+        // Sort the UIDs in descending order
+        globalUIDs = uids.sort(function (a, b) {
+          // Assuming UIDs are strings, you might need to modify the comparison logic based on the actual UID format
+          return b.localeCompare(a);
+        });
+        var uidSelect = document.getElementById('UID');
+        uidSelect.innerHTML = '<option value="" selected disabled>Select UID</option>'; // Reset existing options
+
+        // Use globalUIDs to populate the dropdown
+        globalUIDs.forEach(function (uid) {
+          var option = document.createElement('option');
+          option.value = uid;
+          option.text = uid;
+          uidSelect.appendChild(option);
+        });
+      }).fetchUIDs();
+    }
+
+    var globalClientAreaPairs = {}; // Global variable to store the data
+
+    function populatePartyNames() {
+      google.script.run.withSuccessHandler(function (clientAreaPairs) {
+        globalClientAreaPairs = clientAreaPairs; // Store data in global variable
+        var partyNameSelect = document.getElementById('partyName');
+
+        // Sort the client keys
+        var sortedClients = Object.keys(clientAreaPairs).sort();
+
+        sortedClients.forEach(function (client) {
+          var option = document.createElement('option');
+          option.value = client;
+          option.text = client;
+          partyNameSelect.appendChild(option);
+        });
+      }).getClientAreaPairs();
+    }
+
+    function updateAreaDropdown() {
+      var client = document.getElementById('partyName').value;
+      var areaSelect = document.getElementById('area');
+      areaSelect.innerHTML = ''; // Clear existing options
+
+      if (client && globalClientAreaPairs[client]) {
+        globalClientAreaPairs[client].forEach(function (area) {
+          var option = document.createElement('option');
+          option.value = area;
+          option.text = area;
+          areaSelect.appendChild(option);
+        });
+      }
+    }
+
+    var globalDropdownOptions = {
+      firm: [],
+      dealerName: [],
+      orderReceivedBy: [],
+      paymentTerms: [],
+      reasonForPending: []
+    };
+
+    function loadDropdownData() {
+      google.script.run.withSuccessHandler(function(dropdownOptions) {
+        globalDropdownOptions = dropdownOptions;
+        populateDropdowns();
+      }).getDropdownOptions();
+    }
+
+    function populateDropdowns() {
+      populateDropdown(document.getElementById('orderInCompany'), globalDropdownOptions.firm);
+      populateDropdown(document.getElementById('dealerName'), globalDropdownOptions.dealerName);
+      populateDropdown(document.getElementById('orderReceivedBy'), globalDropdownOptions.orderReceivedBy);
+      populateDropdown(document.getElementById('paymentTerms'), globalDropdownOptions.paymentTerms);
+      populateDropdown(document.getElementById('resFPending'), globalDropdownOptions.reasonForPending);
+    }
+
+    function populateDropdown(dropdown, options) {
+      dropdown.innerHTML = '<option value="">Select</option>';
+      options.forEach(function(optionValue) {
+        var option = document.createElement('option');
+        option.value = optionValue;
+        option.textContent = optionValue;
+        dropdown.appendChild(option);
+      });
+    }
+
+    // Global variable to store item data
+    var globalItemData = {};
+
+    function fetchItemData() {
+      google.script.run.withSuccessHandler(function (data) {
+        globalItemData = data;
+        addItem(); // Populate the first row on load
+      }).getItemData(); // This is the Google Apps Script function
+    }
+
+    function populateItemDropdown(dropdown) {
+      Object.keys(globalItemData).sort().forEach(function (item) {
+        var option = document.createElement('option');
+        option.value = item;
+        option.text = item;
+        dropdown.appendChild(option);
+      });
+    }
+
+    function updateTypeDropdown(itemDropdown) {
+      var row = itemDropdown.closest('tr');
+      var typeDropdown = row.querySelector('.type-dropdown');
+      var uomField = row.querySelector('.uom-field');
+      var productIdField = row.querySelector('.product-id-field');
+
+      // Clear UOM and Product ID fields when a new item is selected
+      uomField.value = '';
+      productIdField.value = '';
+
+      typeDropdown.innerHTML = '<option value="" selected disabled>Select Type</option>';
+      var selectedItem = itemDropdown.value;
+      if (selectedItem && globalItemData[selectedItem]) {
+        Object.keys(globalItemData[selectedItem]).forEach(function (type) {
+          var option = document.createElement('option');
+          option.value = type;
+          option.text = type;
+          typeDropdown.appendChild(option);
+        });
+      }
+    }
+
+    function fillDetails(typeDropdown) {
+        var row = typeDropdown.closest('tr');
+        var itemDropdown = row.querySelector('.item-dropdown');
+        var uomField = row.querySelector('.uom-field');
+        var productIdField = row.querySelector('.product-id-field');
+        var gstField = row.querySelector('.gst-field');
+
+        var selectedItem = itemDropdown.value;
+        var selectedType = typeDropdown.value;
+
+        // Check if selected item and type exist in globalItemData
+        if (selectedItem && selectedType && globalItemData[selectedItem] && globalItemData[selectedItem][selectedType]) {
+            uomField.value = globalItemData[selectedItem][selectedType].uom;
+            productIdField.value = globalItemData[selectedItem][selectedType].productId;
+            updategstField(gstField);
+        } else {
+            uomField.value = '';
+            productIdField.value = '';
+        }
+    }
+
+    function addItem() {
+      var table = document.getElementById("itemsTable");
+      var rows = table.getElementsByTagName("tr");
+      var existingNumbers = [];
+      var newSrNo = 1;
+
+      // Collect all existing serial numbers
+      for (var i = 1; i < rows.length; i++) {
+        var currentSrNo = parseInt(rows[i].getElementsByTagName("input")[0].value);
+        existingNumbers.push(currentSrNo);
+      }
+      existingNumbers.sort((a, b) => a - b); // Sort the numbers
+
+      // Find the first missing number starting from 1
+      while (existingNumbers.includes(newSrNo)) {
+        newSrNo++;
+      }
+      // Use the missing number or the next number in sequence
+      var srNo = newSrNo;
+      var cancelReasonOptions = `
+          <option value="">Select Reason</option>
+          <option value="Delivered from JODA Stock">Delivered from JODA Stock</option>
+          <option value="Cancelled by Dealer">Cancelled by Dealer</option>
+          <option value="Cancelled by Party">Cancelled by Party</option>
+          <option value="Order Cancelled">Order Cancelled</option>
+          <option value="Already Supplied">Already Supplied</option>
+          <option value="Order Amendment">Order Amendment</option>
+          <option value="Rate Mismatch">Rate Mismatch</option>
+        `;
+      var row = table.insertRow(-1);
+      row.innerHTML = `
+            <td style="width: 5%;"><input type="text" class="form-control form-control-sm srNo-field" disabled value="${srNo}" style="width: 100%;"></td> <!-- Sr. No. -->          
+            <td style="width: 15%;"><select class="form-select form-select-sm item-dropdown" onchange="updateTypeDropdown(this)" required></select></td> <!-- Item -->
+            <td style="width: 10%;"><select class="form-select form-select-sm type-dropdown" onchange="fillDetails(this)" required></select></td> <!-- Type -->
+            <td style="width: 6%;"><input type="text" class="form-control form-control-sm uom-field" disabled required></td> <!-- UOM -->   
+            <td style="width: 9%;"><input type="text" class="form-control form-control-sm product-id-field" disabled required></td> <!-- Product ID -->                        
+            <td style="width: 8%;"><input type="number" class="form-control form-control-sm qty-field" min="0" style="width: 100%;" required></td> <!-- Qty. -->
+            <td style="width: 10%;"><input type="number" step="0.01" class="form-control form-control-sm rate-field" min="0" style="width: 100%;" required></td> <!-- Rate -->
+            <td style="width: 6%;"><input type="number" class="form-control form-control-sm disc-field" value="0" min="0" style="width: 100%;"></td> <!-- Disc. % -->
+            <td style="width: 6%;"><input type="number" class="form-control form-control-sm gst-field" value="18" min="18" max="28" required> </td> <!-- GST -->
+            <td style="width: 10%;"><input type="number" class="form-control form-control-sm tAmt-field" min="0" style="width: 100%;" disabled></td> <!-- Total Amt. -->
+            <td class="align-middle text-center" style="width: 3%;"><input type="checkbox" class="form-check-input inst-field"></td> <!-- Install -->
+            <td style="width: 6%;"><input type="number" class="form-control form-control-sm cQty-field" value="0" min="0" style="width: 100%;"></td> <!-- Cancel Qty -->
+            <td style="width: 12%;"><select class="form-select form-select-sm cReason-dropdown" style="width: 100%;">${cancelReasonOptions}</select></td> <!-- Cancel Reason -->
+            <td style="display: none;"><input type="tel" class="form-control form-control-sm rowNum-field"></td> <!-- Row Num -->
+            <td style="display: none;"><input type="text" class="form-control form-control-sm prorow-field"></td> <!-- prorow -->                              
+            <td class="align-middle text-center" style="width: 5%;"><button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)"><i class="fas fa-trash-alt"></i></button></td>
+          `;
+      var itemDropdown = row.querySelector('.item-dropdown');
+      itemDropdown.innerHTML = '<option value="" selected disabled>Select Item</option>';
+      populateItemDropdown(itemDropdown);  
+      itemDropdown.style.width = "180px"; 
+      initializeSelect2ForDropdown(itemDropdown);              
+      var typeDropdown = row.querySelector('.type-dropdown');
+      typeDropdown.innerHTML = '<option value="" selected disabled>Select Type</option>';
+      typeDropdown.style.width = "180px";
+      initializeSelect2ForDropdown(typeDropdown);
+      updateRemoveButtons();
+      configureAutoCalcListeners(row); // Attach event listeners to the new row
+      calculateTotalOrderValue(); // Update the total order value
+      selectcQtybox();
+    }
+
+    function selectcQtybox() {
+      var cQtyboxChecked = document.getElementById('cQtybox').checked;
+      var cQtyFields = document.querySelectorAll('.cQty-field');
+      var cReasonDropdowns = document.querySelectorAll('.cReason-dropdown');
+
+      cQtyFields.forEach(function (field) {
+        field.disabled = !cQtyboxChecked;
+      });
+
+      cReasonDropdowns.forEach(function (dropdown) {
+        dropdown.disabled = !cQtyboxChecked;
+      });
+    }
+
+    function removeItem(button) {
+      var table = button.parentNode.parentNode.parentNode;
+      var row = button.parentNode.parentNode;
+      table.removeChild(row);
+      updateRemoveButtons();
+      calculateTotalOrderValue();
+    }
+
+    function updateRemoveButtons() {
+      var table = document.getElementById("itemsTable");
+      var removeButtons = table.querySelectorAll("button[onclick='removeItem(this)']");
+
+      if (removeButtons.length === 1) {
+        removeButtons[0].disabled = true;
+      } else {
+        removeButtons.forEach(button => button.disabled = false);
+      }
+    }
+
+    function fetchGSTData() {
+      google.script.run.withSuccessHandler(function (gstData) {
+        globalGSTData = gstData;
+      }).getGSTData();
+    }
+
+    var globalGSTData = {};
+
+    // Function to update GST dropdown based on the product ID   
+    function updategstField(gstField) {
+      var row = gstField.closest('tr');
+      var productIdField = row.querySelector('.product-id-field').value;
+      
+      var gstRate = globalGSTData[productIdField]; // Get GST rate from globalGSTData
+      gstField.value = gstRate ? gstRate : '18'; // If rate exists, use it; otherwise, default to 18%
+      calculateTotalOrderValue();
+    }
+
+    // Function to configure automatic calculation listeners for a row
+    function configureAutoCalcListeners(row) {
+      var qtyField = row.querySelector('.qty-field');
+      var rateField = row.querySelector('.rate-field');
+      var discountField = row.querySelector('.disc-field');
+      var gstField = row.querySelector('.gst-field');
+      var cQtyField = row.querySelector('.cQty-field'); // Cancel Quantity Field
+
+      qtyField.addEventListener('change', calculateTotalOrderValue);
+      rateField.addEventListener('change', calculateTotalOrderValue);
+      discountField.addEventListener('change', calculateTotalOrderValue);
+      gstField.addEventListener('change', calculateTotalOrderValue);
+      cQtyField.addEventListener('change', function () {
+        updateQuantityAfterCancellation(row);
+        calculateTotalOrderValue();
+      });
+    }
+
+    function updateQuantityAfterCancellation(row) {
+        var qtyField = row.querySelector('.qty-field');
+        var cQtyField = row.querySelector('.cQty-field');
+
+        var qty = parseFloat(qtyField.value) || 0;
+        var cQty = parseFloat(cQtyField.value) || 0;
+
+        // Check if cancel quantity is greater than the available quantity
+        if (cQty > qty) {
+            // Alert the user and reset the cancel quantity field
+            Swal.fire("Alert", "Cancel quantity cannot be greater than the total available quantity.", "warning");
+            cQtyField.value = 0; // Resetting cancel quantity to 0
+        }
+    }
+
+    // Function to calculate price for a single row
+    function calculateRowPrice(row) {
+      var qty = parseFloat(row.querySelector('.qty-field').value) || 0;
+      var rate = parseFloat(row.querySelector('.rate-field').value) || 0;
+      var discountPercent = parseFloat(row.querySelector('.disc-field').value) || 0;
+      var gstPercent = parseFloat(row.querySelector('.gst-field').value) || 0;
+
+      var totalPrice = qty * rate;
+      var discountAmount = totalPrice * (discountPercent / 100);
+      var gstAmount = (totalPrice - discountAmount) * (gstPercent / 100);
+      var netPrice = totalPrice - discountAmount + gstAmount;
+
+      // Set the calculated net price to the tAmt-field
+      row.querySelector('.tAmt-field').value = netPrice.toFixed(2);
+    }
+
+    // Function to calculate and update the total order value
+    function calculateTotalOrderValue() {
+      var table = document.getElementById('itemsTable');
+      var totalOrderValue = 0;
+
+      for (var i = 1; i < table.rows.length; i++) {
+        calculateRowPrice(table.rows[i]); // This will also update the tAmt-field
+        totalOrderValue += parseFloat(table.rows[i].querySelector('.tAmt-field').value);
+      }
+
+      document.getElementById('orderValue').value = totalOrderValue.toFixed(2);
+    }
+
+    // Function to attach event listeners to all existing rows
+    function attachEventListenersToAllRows() {
+      var table = document.getElementById('itemsTable');
+      for (var i = 1; i < table.rows.length; i++) {
+        configureAutoCalcListeners(table.rows[i]);
+      }
+    }
+
+    function clearItemsTable() {
+      var table = document.getElementById('itemsTable');
+      var rows = table.getElementsByTagName('tr');
+
+      // Loop through the rows in reverse order and delete each one, except the header row
+      for (var i = rows.length - 1; i > 0; i--) {
+        table.deleteRow(i);
+      }
+    }
+
+    function clearEverything() {
+      // Clear validation classes from the form
+      let form = document.getElementById('orderForm');
+      form.classList.remove('was-validated');
+      // Reset the form fields
+      document.getElementById('orderForm').reset();
+      $('#UID').val('').trigger('change');
+      $('#partyName').val('').trigger('change');
+      $('#area').val('').trigger('change');
+      // Clear the data-url attribute from the dowPO button
+      var dowPOButton = document.getElementById('dowPO');
+      dowPOButton.removeAttribute('data-url');
+      updateDowPOButton(); // Call to update the button's style
+      populateUIDDropdown();
+      clearItemsTable();
+      fetchItemData();
+    }
+
+    function clearForm() {
+      Swal.fire({
+        title: 'Alert',
+        text: 'Do you want to Clear Form?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, clear it!',
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return; // If user clicks "Cancel", just return without doing anything
+        }
+        let form = document.getElementById('orderForm');
+        form.classList.remove('was-validated');
+        document.getElementById('orderForm').reset();
+        $('#UID').val('').trigger('change');
+        $('#partyName').val('').trigger('change');
+        $('#area').val('').trigger('change');
+        var dowPOButton = document.getElementById('dowPO');
+        dowPOButton.removeAttribute('data-url');
+        updateDowPOButton(); // Call to update the button's style
+        populateUIDDropdown();
+        clearItemsTable();
+        fetchItemData();
+        Swal.fire('Good job!', 'Form cleared successfully!', 'success');
+      });
+    }
+
+    function getTableData() {
+      var itemsTable = document.getElementById('itemsTable');
+      var rows = itemsTable.getElementsByTagName('tr');
+      var itemFields = [];
+      for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        var rowData = {
+          srNo: row.cells[0].querySelector('input,select').value,
+          item: row.cells[1].querySelector('input,select').value,
+          type: row.cells[2].querySelector('input,select').value,
+          uom: row.cells[3].querySelector('input,select').value,
+          productId: row.cells[4].querySelector('input,select').value,
+          qty: row.cells[5].querySelector('input,select').value,
+          rate: row.cells[6].querySelector('input,select').value,
+          disc: row.cells[7].querySelector('input,select').value,
+          gst: row.cells[8].querySelector('input,select').value,
+          tAmt: row.cells[9].querySelector('input,select').value,
+          inst: row.cells[10].querySelector('input,select').checked ? 1 : 0,
+          cQty: row.cells[11].querySelector('input,select').value,
+          cReason: row.cells[12].querySelector('input,select').value,
+          rowNum: row.cells[13].querySelector('input,select').value,
+          prorow: row.cells[14].querySelector('input,select').value                     
+        };
+        itemFields.push(rowData);
+      }
+      return JSON.stringify(itemFields);
+    }
+
+    function submitForm() {
+      // Check valididity
+      if (!isFormValid(event)) {
+        return;
+      }
+      var uidField = document.getElementById('UID');
+      var uidFieldvalue = uidField.value;
+
+      var isDuplicateChecked = document.getElementById('duplicate').checked;
+
+      // Check if the searchUID field is not empty and duplicate is not checked
+      if (uidFieldvalue.trim() !== '' && !isDuplicateChecked) {
+        Swal.fire(
+          'Alert',
+          'Submit button not working. You need to update or clear the form.',
+          'warning'
+        );
+        return; // Exit the function without submitting
+      }
+
+      var pocopy = document.getElementById('pocopy').files[0];
+      var pocopyUrl = document.getElementById('dowPO').getAttribute('data-url');
+
+      if (!pocopy && !pocopyUrl) {
+        Swal.fire('Error', 'Please provide a PO copy or ensure an existing PO copy URL is available.', 'error');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Confirmation',
+        text: 'Are you sure you want to submit the form?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, submit it!',
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return; // If the user clicks "Cancel," return without submitting
+        }
+        // Show loading indicator
+        Swal.fire({
+          title: 'Please Wait!',
+          html: 'Data submit in progress', // You can add more HTML here if needed
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        var username = localStorage.getItem('username');
+        // Collect data from the form
+        var formData = {
+          orderNo: document.getElementById('orderNo').value,
+          orderInCompany: document.getElementById('orderInCompany').value,
+          partyName: document.getElementById('partyName').value,
+          area: document.getElementById('area').value,
+          rPerson: document.getElementById('rPerson').value,
+          rDes: document.getElementById('rDes').value,
+          rcNumber: document.getElementById('rcNumber').value,
+          remailId: document.getElementById('remailId').value,
+          orderDate: document.getElementById('orderDate').value,
+          orderRecdDate: document.getElementById('orderRecdDate').value,
+          despatchDueDate: document.getElementById('despatchDueDate').value,
+          dealerName: document.getElementById('dealerName').value,
+          orderReceivedBy: document.getElementById('orderReceivedBy').value,
+          paymentTerms: document.getElementById('paymentTerms').value,
+          orderValue: document.getElementById('orderValue').value,
+          resFPending: document.getElementById('resFPending').value,
+          remarks: document.getElementById('remarks').value,
+          username: username,
+          itemFields: getTableData(),
+        };
+
+        // Read the file first
+        if (pocopy) {
+          uploadFile(pocopy, formData);
+        } else if (pocopyUrl) {
+          formData.pocopyUrl = pocopyUrl;
+          sendDataToServer(formData);
+        }
+      });
+    }
+
+    function uploadFile(file, formData) {
+      var fr = new FileReader();
+      fr.onload = function (e) {
+        var fileData = {
+          content: e.target.result,
+          name: file.name,
+        };
+        google.script.run
+          .withSuccessHandler(function (fileUrl) {
+            formData.pocopyUrl = fileUrl; // Add the file URL to formData
+            sendDataToServer(formData); // Then send the complete data to server
+          })
+          .handleFileUploadToDrive(fileData);
+      };
+      fr.readAsDataURL(file);
+    }
+
+    function sendDataToServer(formData) {
+      google.script.run
+        .withSuccessHandler(function (responseMessage) {
+          Swal.close();
+          Swal.fire('Success!', responseMessage, 'success');
+          clearEverything();
+        })
+        .withFailureHandler(function (error) {
+          Swal.close();
+          Swal.fire(
+            'Error',
+            'Error submitting Form: ' + error.message,
+            'error'
+          );
+        })
+        .submitData(formData);
+    }
+
+    function updateForm() {
+      if (!isFormValid(event)) {
+        return;
+      }
+
+      var uidField = document.getElementById('UID');
+      var uidFieldvalue = uidField.value;
+
+      // Check if the searchUID field is empty
+      if (uidFieldvalue.trim() == '') {
+        Swal.fire(
+          'Alert',
+          'Update button not working. Please select order id for update.',
+          'warning'
+        );
+        return; // Exit the function without submitting
+      }
+
+      var pocopy = document.getElementById('pocopy').files[0];
+      var pocopyUrl = document.getElementById('dowPO').getAttribute('data-url');
+
+      if (!pocopy && !pocopyUrl) {
+        Swal.fire('Error', 'Please provide a PO copy or ensure an existing PO copy URL is available.', 'error');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Confirmation',
+        text: 'Are you sure you want to update this order?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!'
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return;
+        }
+        // Show loading indicator
+        Swal.fire({
+          title: 'Please Wait!',
+          html: 'Data update in progress', // You can add more HTML here if needed
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        var username = localStorage.getItem('username');
+        var formData = {
+          uid: document.getElementById('UID').value,
+          orderNo: document.getElementById('orderNo').value,
+          orderInCompany: document.getElementById('orderInCompany').value,
+          partyName: document.getElementById('partyName').value,
+          area: document.getElementById('area').value,
+          rPerson: document.getElementById('rPerson').value,
+          rDes: document.getElementById('rDes').value,
+          rcNumber: document.getElementById('rcNumber').value,
+          remailId: document.getElementById('remailId').value,
+          orderDate: document.getElementById('orderDate').value,
+          orderRecdDate: document.getElementById('orderRecdDate').value,
+          despatchDueDate: document.getElementById('despatchDueDate').value,
+          dealerName: document.getElementById('dealerName').value,
+          orderReceivedBy: document.getElementById('orderReceivedBy').value,
+          paymentTerms: document.getElementById('paymentTerms').value,
+          orderValue: document.getElementById('orderValue').value,
+          resFPending: document.getElementById('resFPending').value,
+          remarks: document.getElementById('remarks').value,
+          username: username,
+          itemFields: getTableData(),
+        };
+
+        if (pocopy) {
+          updateFile(pocopy, formData);
+        } else if (pocopyUrl) {
+          formData.pocopyUrl = pocopyUrl;
+          sendUDataToServer(formData);
+        }
+      });
+    }
+
+    function updateFile(file, formData) {
+      var fr = new FileReader();
+      fr.onload = function (e) {
+        var fileData = {
+          content: e.target.result,
+          name: file.name,
+        };
+        google.script.run
+          .withSuccessHandler(function (fileUrl) {
+            formData.pocopyUrl = fileUrl; // Add the file URL to formData
+            sendUDataToServer(formData); // Then send the complete data to server
+          })
+          .handleFileupdateToDrive(fileData);
+      };
+      fr.readAsDataURL(file);
+    }
+
+    function sendUDataToServer(formData) {
+      google.script.run
+        .withSuccessHandler(function (responseMessage) {
+          Swal.close();
+          Swal.fire('Success!', responseMessage, 'success');
+          clearEverything();
+        })
+        .withFailureHandler(function (error) {
+          Swal.close();
+          Swal.fire(
+            'Error',
+            'Error updating Form: ' + error.message,
+            'error'
+          );
+        })
+        .updateData(formData);
+    }
+
+    function openpoUrl() {
+      var dowPOButton = document.getElementById('dowPO');
+      var url = dowPOButton.getAttribute('data-url');
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        Swal.fire('Error', 'No PO Copy available', 'error');
+      }
+    }
+
+    function handleDowPOButton(dataUrl) {
+      var dowPOButton = document.getElementById('dowPO');
+
+      if (dataUrl) {
+        // If dataUrl is available, set the URL and enable the button
+        dowPOButton.setAttribute('data-url', dataUrl);
+        dowPOButton.classList.add('btn-info');
+        dowPOButton.disabled = false;
+      } else {
+        // If dataUrl is null, remove the URL and disable the button
+        dowPOButton.removeAttribute('data-url');
+        dowPOButton.classList.remove('btn-info');
+        dowPOButton.disabled = true;
+      }
+    }
+
+    function updateDowPOButton() {
+      var dowPOButton = document.getElementById('dowPO');
+      var url = dowPOButton.getAttribute('data-url');
+      if (url) {
+        dowPOButton.classList.add('btn-info');
+      } else {
+        dowPOButton.classList.remove('btn-info');
+      }
+    }
+
+    function searchUid() {
+      var uid = document.getElementById('UID').value; // Assuming you have an input field with id 'UID'
+      var duplicate = document.getElementById('duplicate');
+      duplicate.checked = false;
+      if (!uid) {
+        Swal.fire('Information', 'Please enter a UID to search!', 'info');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Confirmation',
+        text: 'Are you sure you want to search with this UID?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, search!',
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return; // If user clicks "Cancel", just return without searching
+        }
+
+        // Show loading indicator
+        Swal.fire({
+          title: 'Please Wait!',
+          html: 'Data search in progress', // You can add more HTML here if needed
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        google.script.run
+          .withSuccessHandler(function (response) {
+            // console.log(response)
+            Swal.close();
+            if (response.length === 0) {
+              Swal.fire('Information', 'No data found for given UID!', 'info');
+              return;
+            }
+
+            // Assuming the first response item contains the order form data
+            populateOrderForm(response[0]);
+            // If there are multiple rows with the same UID, populate them in the items table
+            populateItemsTable(response);
+          })
+          .withFailureHandler(function (error) {
+            Swal.close();
+            Swal.fire('Error', 'An error occurred: ' + error, 'error');
+          })
+          .fetchUID(uid);
+      });
+    }
+
+    function populateOrderForm(data) {
+      clearItemsTable();
+      document.getElementById('orderNo').value = data.orderNo;
+      document.getElementById('orderInCompany').value = data.orderInCompany;
+      document.getElementById('partyName').value = data.partyName;
+      $('#partyName').trigger('change');
+      document.getElementById('area').value = data.area;
+      $('#area').trigger('change');
+      document.getElementById('rPerson').value = data.rPerson;
+      document.getElementById('rDes').value = data.rDes;
+      document.getElementById('rcNumber').value = data.rcNumber;
+      document.getElementById('remailId').value = data.remailId;
+      document.getElementById('orderDate').value = data.forderDate;
+      document.getElementById('orderRecdDate').value = data.forderRecdDate;
+      document.getElementById('despatchDueDate').value = data.fdespatchDueDate;
+      document.getElementById('dealerName').value = data.dealerName;
+      document.getElementById('orderReceivedBy').value = data.orderReceivedBy;
+      document.getElementById('paymentTerms').value = data.paymentTerms;
+      document.getElementById('orderValue').value = data.orderValue;
+      document.getElementById('resFPending').value = data.resFPending;
+      document.getElementById('remarks').value = data.remarks;
+      handleDowPOButton(data.dowPO);
+      updateDowPOButton(); // Call to update the button's style 
+    }
+
+    function populateItemsTable(items) {
+      var tbody = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
+      tbody.innerHTML = ''; // Clear existing rows
+
+      items.forEach(itemData => {
+        var table = document.getElementById("itemsTable");
+
+        var cancelReasonOptions = `
+              <option value="">Select Reason</option>
+              <option value="Delivered from JODA Stock">Delivered from JODA Stock</option>
+              <option value="Cancelled by Dealer">Cancelled by Dealer</option>
+              <option value="Cancelled by Party">Cancelled by Party</option>
+              <option value="Order Cancelled">Order Cancelled</option>
+              <option value="Already Supplied">Already Supplied</option>
+              <option value="Order Amendment">Order Amendment</option>
+              <option value="Rate Mismatch">Rate Mismatch</option>
+            `;
+
+        var row = table.insertRow(-1);
+        row.innerHTML = `
+              <td style="width: 5%;"><input type="text" class="form-control form-control-sm srNo-field" disabled value="${itemData.srNo}" style="width: 100%;"></td> <!-- Sr. No. -->          
+              <td style="width: 15%;"><select class="form-select form-select-sm item-dropdown" onchange="updateTypeDropdown(this)" required></select></td> <!-- Item -->
+              <td style="width: 10%;"><select class="form-select form-select-sm type-dropdown" onchange="fillDetails(this)" required></select></td> <!-- Type -->
+              <td style="width: 6%;"><input type="text" class="form-control form-control-sm uom-field" required disabled value="${itemData.uom}"></td> <!-- UOM -->   
+              <td style="width: 9%;"><input type="text" class="form-control form-control-sm product-id-field" required disabled value="${itemData.productId}"></td> <!-- Product ID -->                        
+              <td style="width: 8%;"><input type="number" class="form-control form-control-sm qty-field" min="0" value="${itemData.qty}" style="width: 100%;" required></td> <!-- Qty. -->
+              <td style="width: 10%;"><input type="number" step="0.01" class="form-control form-control-sm rate-field" min="0" value="${itemData.rate}" style="width: 100%;" required></td> <!-- Rate -->
+              <td style="width: 6%;"><input type="number" class="form-control form-control-sm disc-field" min="0" value="${itemData.disc}" style="width: 100%;"></td> <!-- Disc. % -->
+              <td style="width: 6%;"><input type="number" class="form-control form-control-sm gst-field" value="${itemData.gst}" min="18" max="28" required> </td> <!-- GST -->
+              <td style="width: 10%;"><input type="number" class="form-control form-control-sm tAmt-field" min="0" value="${itemData.tAmt}" style="width: 100%;" disabled></td> <!-- Total Amt. -->
+              <td class="align-middle text-center" style="width: 3%;"><input type="checkbox" class="form-check-input inst-field" ${itemData.inst == "1" ? 'checked' : ''}></td> <!-- Install -->
+              <td style="width: 6%;"><input type="number" class="form-control form-control-sm cQty-field" value="${itemData.cQty}" min="0" style="width: 100%;"></td> <!-- Cancel Qty -->
+              <td style="width: 12%;"><select class="form-select form-select-sm cReason-dropdown" style="width: 100%;">${cancelReasonOptions}</select></td> <!-- Cancel Reason -->
+              <td style="display: none;"><input type="tel" class="form-control form-control-sm rowNum-field" value="${itemData.rowNum}"></td> <!-- Row Num -->
+              <td style="display: none;"><input type="text" class="form-control form-control-sm prorow-field" value="${itemData.prorow}"></td> <!--prorow -->                           
+              <td class="align-middle text-center" style="width: 5%;"><button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+
+        // Check if itemData.prorow is not null or empty, then disable the row
+        if (itemData.prorow != null && itemData.prorow.trim() !== "") {
+            disableRow(row);
+        }
+
+        var itemDropdown = row.querySelector('.item-dropdown');
+        itemDropdown.innerHTML = '<option value="" selected disabled>Select Item</option>';        
+        populateItemDropdown(itemDropdown);
+
+        var itemOptionExists = Array.from(itemDropdown.options).some(option => option.value === itemData.item);
+        if (!itemOptionExists) {
+          var newOption = new Option(itemData.item, itemData.item);
+          itemDropdown.appendChild(newOption);
+        }
+        $(itemDropdown).val(itemData.item).trigger('change');
+
+        var typeDropdown = row.querySelector('.type-dropdown');
+        typeDropdown.innerHTML = '<option value="" selected disabled>Select Type</option>';        
+        updateTypeDropdown(typeDropdown);
+
+        var typeOptionExists = Array.from(typeDropdown.options).some(option => option.value === itemData.type);
+        if (!typeOptionExists) {
+          var newOption = new Option(itemData.type, itemData.type);
+          typeDropdown.appendChild(newOption);
+        }
+        $(typeDropdown).val(itemData.type).trigger('change');
+
+
+        itemDropdown.style.width = "180px";
+        typeDropdown.style.width = "180px";
+        initializeSelect2ForDropdown(itemDropdown);
+        initializeSelect2ForDropdown(typeDropdown);
+        // Set the cancel reason dropdown value
+        row.querySelector('.cReason-dropdown').value = itemData.cReason;
+        updateRemoveButtons();
+        configureAutoCalcListeners(row); // Attach event listeners to the new row
+        calculateTotalOrderValue(); // Update the total order value
+        selectcQtybox();
+      })
+    }
+
+    // Function to disable all inputs, selects, and specific button in a row and change row color
+    function disableRow(row) {
+        var inputs = row.getElementsByTagName('input');
+        var selects = row.getElementsByTagName('select');
+        var buttons = row.getElementsByTagName('button');
+
+        Array.from(inputs).forEach(input => {
+            input.disabled = true;
+            input.classList.add('disabled-field');
+        });
+        Array.from(selects).forEach(select => {
+            select.disabled = true;
+            select.classList.add('disabled-field');
+        });
+        Array.from(buttons).forEach(button => {
+            if (button.onclick.toString().includes("removeItem")) {
+                button.disabled = true;
+                button.classList.add('disabled-field');
+            }
+        });
+    }
+
+    function deleteForm() {
+      var uid = document.getElementById('UID').value;
+
+      if (!uid) {
+        Swal.fire("Alert", "Please select a Order ID.", "warning");
+        return;
+      }
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to delete Order ID ' + uid + '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+        // Show loading indicator
+        Swal.fire({
+          title: 'Please Wait!',
+          html: 'Data delete in progress', // You can add more HTML here if needed
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+          google.script.run.withSuccessHandler(function (responseMessage) {
+            Swal.close();
+            Swal.fire("Deleted!", responseMessage, "success");
+            clearEverything();
+          }).withFailureHandler(function (error) {
+            Swal.close();
+            Swal.fire("Error!", error.message, "error"); // Displaying the error message from server-side
+          }).deleteUid(uid);
+        }
+      });
+    }
+
+    function printForm() {
+        // Extract data from form fields
+        var username = localStorage.getItem('username');
+        var formData = {
+          uid: document.getElementById('UID').value,
+          orderNo: document.getElementById('orderNo').value,
+          orderInCompany: document.getElementById('orderInCompany').value,
+          partyName: document.getElementById('partyName').value,
+          area: document.getElementById('area').value,
+          rPerson: document.getElementById('rPerson').value,
+          rDes: document.getElementById('rDes').value,
+          rcNumber: document.getElementById('rcNumber').value,
+          remailId: document.getElementById('remailId').value,
+          orderDate: document.getElementById('orderDate').value,
+          orderRecdDate: document.getElementById('orderRecdDate').value,
+          despatchDueDate: document.getElementById('despatchDueDate').value,
+          dealerName: document.getElementById('dealerName').value,
+          orderReceivedBy: document.getElementById('orderReceivedBy').value,
+          paymentTerms: document.getElementById('paymentTerms').value,
+          orderValue: document.getElementById('orderValue').value,
+          resFPending: document.getElementById('resFPending').value,
+          remarks: document.getElementById('remarks').value,
+          username: username,
+        };
+
+        // Extract table data
+        var itemsTable = document.getElementById('itemsTable');
+        var rows = itemsTable.getElementsByTagName('tr');
+        var itemFields = [];
+
+        for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            var rowData = {
+              srNo: row.cells[0].querySelector('input,select').value,
+              item: row.cells[1].querySelector('input,select').value,
+              type: row.cells[2].querySelector('input,select').value,
+              uom: row.cells[3].querySelector('input,select').value,
+              productId: row.cells[4].querySelector('input,select').value,
+              qty: row.cells[5].querySelector('input,select').value,
+              rate: row.cells[6].querySelector('input,select').value,
+              disc: row.cells[7].querySelector('input,select').value,
+              gst: row.cells[8].querySelector('input,select').value,
+              tAmt: row.cells[9].querySelector('input,select').value,
+              inst: row.cells[10].querySelector('input,select').checked ? 1 : 0,
+              cQty: row.cells[11].querySelector('input,select').value,
+              cReason: row.cells[12].querySelector('input,select').value,
+              rowNum: row.cells[13].querySelector('input,select').value,
+              prorow: row.cells[14].querySelector('input,select').value  
+            };
+            itemFields.push(rowData);
+        }
+
+        var now = new Date();
+        var currentTimestamp = now.getDate().toString().padStart(2, '0') + '/' +
+                        (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                        now.getFullYear() + ' ' +
+                        now.getHours().toString().padStart(2, '0') + ':' +
+                        now.getMinutes().toString().padStart(2, '0') + ':' +
+                        now.getSeconds().toString().padStart(2, '0');  
+
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var day = ('0' + date.getDate()).slice(-2); // Add leading zero and take the last two characters
+            var month = ('0' + (date.getMonth() + 1)).slice(-2); // JavaScript months are 0-based
+            var year = date.getFullYear();
+            return `${day}-${month}-${year}`; // Concatenate in dd-mm-yyyy format
+        }
+                           
+        // Generate HTML string for printing with styling
+        var html = `
+        <html>
+        <head>
+            <style>
+              @page { 
+                    size: A4 landscape !important; 
+                    margin: 5mm 5mm 5mm 15mm !important;
+                }            
+                body {
+                    font-family: 'Arial', sans-serif;
+                    font-size: 10px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 5px;
+                    border: 3px double black;
+                }
+                th, td {
+                    border: 1px solid black;
+                    padding: 8px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+                .header {
+                    font-size: 12px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-bottom: 5px;
+                }
+                tr:nth-child(even) {
+                    background-color: #F3F3F3;
+                }
+                tr:nth-child(odd) {
+                    background-color: #ffffff;
+                }
+                thead { display: table-header-group; }
+                tbody { display: table-row-group; }                
+            </style>
+        </head>
+        <body>
+            <div class="header">Order Form</div>
+            <table>
+                <tr>
+                    <td><strong>Order Id:</strong></td>
+                    <td><strong>${formData.uid}</strong></td>
+                    <td><strong>Order No.:</strong></td>
+                    <td>${formData.orderNo}</td>
+                    <td><strong>Order Date:</strong></td>
+                    <td>${formatDate(formData.orderDate)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Firm:</strong></td>
+                    <td>${formData.orderInCompany}</td>
+                    <td><strong>Party Name:</strong></td>
+                    <td><strong>${formData.partyName}</strong></td>
+                    <td><strong>Order Recd. Date:</strong></td>
+                    <td>${formatDate(formData.orderRecdDate)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Area:</strong></td>
+                    <td>${formData.area}</td>
+                    <td><strong>Resp. Person:</strong></td>
+                    <td>${formData.rPerson}</td>
+                    <td><strong>Despatch Due Date:</strong></td>
+                    <td>${formatDate(formData.despatchDueDate)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Desig.:</strong></td>
+                    <td>${formData.rDes}</td>
+                    <td><strong>Contact Number:</strong></td>
+                    <td>${formData.rcNumber}</td>
+                    <td><strong>Dealer Name:</strong></td>
+                    <td>${formData.dealerName}</td>
+                </tr>
+                <tr>
+                    <td><strong>Email ID:</strong></td>
+                    <td>${formData.remailId}</td>
+                    <td><strong>Order Received By:</strong></td>
+                    <td>${formData.orderReceivedBy}</td>
+                    <td><strong>Payment Terms:</strong></td>
+                    <td>${formData.paymentTerms}</td>
+                </tr>
+                <tr>
+                    <td><strong>Order Value:</strong></td>
+                    <td><strong>${formData.orderValue}</strong></td>
+                    <td><strong>Reason for Pending:</strong></td>
+                    <td>${formData.resFPending}</td>
+                    <td><strong>Timestamp:</strong></td>
+                    <td>${currentTimestamp}</td>
+                </tr>
+                <tr>
+                    <td><strong>Username:</strong></td>
+                    <td>${username}</td>
+                    <td>----</td>
+                    <td>----</td>
+                    <td>----</td>
+                    <td>----</td>
+                </tr>
+                <tr>
+                    <td><strong>Remarks:</strong></td>
+                    <td colspan="5">${formData.remarks}</td>
+                </tr>
+            </table>
+            <body>
+              <div class="header">Item Details</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Sr.No.</th>
+                    <th>Item</th>
+                    <th>Type</th>
+                    <th>UOM</th>
+                    <th>Product ID</th>
+                    <th>Qty.</th>
+                    <th>Rate</th>
+                    <th>Disc. %</th>
+                    <th>GST %</th>
+                    <th>T.Amt.</th>
+                    <th>C.Qty.</th>
+                    <th>C.Reason</th>
+                  </tr>
+                </thead>
+              <tbody>`;
+
+        itemFields.forEach(function(item) {
+            html += `<tr>
+                        <td>` + item.srNo + `</td>
+                        <td>` + item.item + `</td>
+                        <td>` + item.type + `</td>
+                        <td>` + item.uom + `</td>
+                        <td>` + item.productId + `</td>
+                        <td>` + item.qty + `</td>
+                        <td>` + item.rate + `</td>
+                        <td>` + item.disc + `</td>
+                        <td>` + item.gst + `</td>
+                        <td>` + item.tAmt + `</td>
+                        <td>` + item.cQty + `</td>
+                        <td>` + item.cReason + `</td>
+                    </tr>`;
+        });
+
+        html += `</tbody></table></body></html>`;
+
+        // Print the HTML using PrintJS
+        printJS({ printable: html, type: 'raw-html' });
+    }
+
+    function getDataAll() {
+      // Show loading indicator
+      Swal.fire({
+        title: 'Please Wait!',
+        html: 'Data fetching in progress', // You can add more HTML here if needed
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      google.script.run
+        .withSuccessHandler(function (responseMessage) {
+          Swal.close();
+          Swal.fire('Success!', responseMessage, 'success');
+          refresh();
+        })
+        .withFailureHandler(function (error) {
+          Swal.close();
+          // The error message is obtained from the server-side error thrown
+          Swal.fire('Error', 'Error during data import: ' + error.message, 'error');
+        })
+        .runAllDataImports();
+    }
+    
+    function getProrowAll() {
+      google.script.run
+        .withSuccessHandler(function () {
+        })
+        .getProrowImports();
+    }
+
+    function refresh() {
+      var username = localStorage.getItem('username');
+      google.script.run.withSuccessHandler(function (html) {
+        document.open();
+        document.write(html);
+        document.close();
+      }).showPage(username);
+    };      
+  </script>
+</body>
+
+</html>
